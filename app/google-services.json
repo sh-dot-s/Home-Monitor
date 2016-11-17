@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "144614018372",
+    "firebase_url": "https://slesh-web-proxy.firebaseio.com",
+    "project_id": "slesh-web-proxy",
+    "storage_bucket": "slesh-web-proxy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144614018372:android:8de0b11e1e050ba2",
+        "android_client_info": {
+          "package_name": "com.raspberrypi.slash.simple_db"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144614018372-mbd03r8hejqqbqa3ckqkr52p4525l21f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.raspberrypi.slash.simple_db",
+            "certificate_hash": "C4AB5D0DCAA8147CAB53FE29E0084B56E923513B"
+          }
+        },
+        {
+          "client_id": "144614018372-k8goa4d2v7juoim5llkll3n7soqdkup2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgU7ukCavB57hbv1nve_EPPrKocLGpqvk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144614018372-k8goa4d2v7juoim5llkll3n7soqdkup2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
