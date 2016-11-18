@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Simple_DB</string>
+    <string name="reg_email">Enter Email to Register</string>
 </resources>

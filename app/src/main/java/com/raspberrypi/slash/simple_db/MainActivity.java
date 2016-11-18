@@ -1,27 +1,33 @@
 package com.raspberrypi.slash.simple_db;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-
+    EditText email = (EditText) findViewById(R.id.editText3);
+    Button register = (Button) findViewById(R.id.button_2);
+    TextView token = (TextView) findViewById(R.id.textView);
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (getIntent().getExtras() != null) {
-            for (String key : getIntent().getExtras().keySet()) {
-                Object value = getIntent().getExtras().get(key);
-                Log.d(TAG, "Key: " + key + " Value: " + value);
+        /*register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                token.setText(Constants.SHARED_PREF);
             }
-        }
+        });*/
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,3 +44,4 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
