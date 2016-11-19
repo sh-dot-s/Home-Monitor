@@ -2,6 +2,7 @@ package com.raspberrypi.slash.simple_db;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,54 +14,53 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
+    Register r = new Register();
+    public static final String TAG = "registrationPOST";
+    Context mainAct = MainActivity.this;
     Button register;
     TextView token;
     EditText email;
-    public View.OnClickListener getEmail;
+    SharedPreferences share;
+    SharedPreferences.Editor editor;
+
+    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         register = (Button) findViewById(R.id.button_reg);
         token = (TextView) findViewById(R.id.textView);
         email = (EditText) findViewById(R.id.editText3);
-        register.setOnClickListener(getEmail);
+        share = getSharedPreferences(Constants.SHARED_PREF,MODE_PRIVATE);
+        editor= share.edit();
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(email.getText() != null && isRegistered()) {
+                    r.sendRegistrationToServer(refreshedToken, email.getText().toString());
+                    editor.putString(Constants.REGISTERED, "True");
+                    editor.apply();
+                }
+                r.checkRegistration(mainAct);
+                token.setText(refreshedToken);
+                if(isRegistered())
+                    Toast.makeText(getApplicationContext(),"Already Registered", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-    public void sendRegistrationToServer(String token){
-        final String registrationToken = Constants.FCM_TOKEN;
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(Constants.REGISTER_URL);
 
-        try {
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("firebaseid", registrationToken));
-            nameValuePairs.add(new BasicNameValuePair("email","slash" ));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+    public boolean isRegistered(){
 
-            // Execute HTTP Post Request
-            HttpResponse response = httpclient.execute(httppost);
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-        }
+        if(share.toString().equals("False"))
+            return false;
+        else
+            return true;
     }
 
     @Override
