@@ -1,8 +1,9 @@
 package com.raspberrypi.slash.simple_db;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.StrictMode;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,53 +15,97 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity {
-    Register r = new Register();
-    public static final String TAG = "registrationPOST";
+    public static final String TAG = "registration";
     Context mainAct = MainActivity.this;
-    Button register;
+    Button register,view;
     TextView token;
     EditText email;
+    public static final String REGISTERED = "";
     SharedPreferences share;
+    String reg_text;
     SharedPreferences.Editor editor;
-
+    Register r = new Register();
     String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+    Thread reg = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            r.sendRegistrationToServer(refreshedToken, email.getText().toString());
+            editor.clear();
+            editor.putString(REGISTERED, "Registered").apply();
+            Log.d(TAG, reg_text);
+            Log.d(TAG, "In reg thread");
+        }
+
+    });
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
         register = (Button) findViewById(R.id.button_reg);
         token = (TextView) findViewById(R.id.textView);
         email = (EditText) findViewById(R.id.editText3);
-        share = getSharedPreferences(Constants.SHARED_PREF,MODE_PRIVATE);
-        editor= share.edit();
+        view = (Button)findViewById(R.id.button3);
+        share = mainAct.getSharedPreferences(REGISTERED, 0);
+        editor = share.edit();
+        editor.putString(REGISTERED,"Unregistered");
+        editor.apply();
+        token.setText(refreshedToken);
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(email.getText() != null && isRegistered()) {
-                    r.sendRegistrationToServer(refreshedToken, email.getText().toString());
-                    editor.putString(Constants.REGISTERED, "True");
-                    editor.apply();
+
+                reg_text = share.getString(REGISTERED, "defaultStringIfNothingFound");
+                token.setText(reg_text);
+                Log.d(TAG, reg_text);
+                if (email.getText() != null && isRegistered()) {
+                    Log.d(TAG, "in gettext if");
+                    if (!reg.isAlive())
+                        reg.start();
+                    else if(reg.isAlive())
+                        reg.interrupt();
+                } else if (!isRegistered()) {
+                    Toast.makeText(getApplicationContext(), "Already Registered", Toast.LENGTH_SHORT).show();
                 }
+                Log.d(TAG, "In Onclick");
                 r.checkRegistration(mainAct);
-                token.setText(refreshedToken);
-                if(isRegistered())
-                    Toast.makeText(getApplicationContext(),"Already Registered", Toast.LENGTH_SHORT).show();
+
+
             }
         });
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, Display.class);
+                startActivity(i);
+                finish();
+            }
+        });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    public boolean isRegistered(){
-
-        if(share.toString().equals("False"))
-            return false;
-        else
+    public boolean isRegistered() {
+        Log.d(TAG, "In isreg");
+        if (reg_text.equalsIgnoreCase("Unregistered")) {
+            Log.d(TAG, reg_text);
             return true;
+        } else {
+            Log.d(TAG, reg_text);
+            return false;
+        }
     }
 
     @Override
@@ -76,6 +121,42 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class Register {
     public static final String TAG = "registrationPOST";
-    StringRequest req;
+    public StringRequest req;
     public void sendRegistrationToServer(String refreshedToken, String email){
 
         final String registrationToken = refreshedToken;

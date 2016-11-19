@@ -42,5 +42,12 @@
             android:id="@+id/button_reg"
             android:layout_gravity="center"
             android:layout_marginTop="10dp" />
+
+        <Button
+            android:text="View"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button3"
+            android:layout_gravity="center"/>
     </LinearLayout>
 </RelativeLayout>
