@@ -23,40 +23,36 @@ import java.util.List;
 public class Register {
     public static final String TAG = "registrationPOST";
     public StringRequest req;
-    public void sendRegistrationToServer(String refreshedToken, String email){
-
-        final String registrationToken = refreshedToken;
+    public void sendRegistrationToServer(String refreshedToken, String email,Context cont){
+        final Context c = cont;
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("http://192.168.0.110/Tutorial/Register.php");
 
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("firebaseid", registrationToken));
+            nameValuePairs.add(new BasicNameValuePair("firebaseid", refreshedToken));
             nameValuePairs.add(new BasicNameValuePair("email",email));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = httpclient.execute(httppost);
             Log.d(TAG,"Reg_Success");
+            req = new StringRequest(Request.Method.POST, Constants.REGISTER_URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    if (response.trim().equalsIgnoreCase("success"))
+                        Toast.makeText(c, "Registration Successful", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(c, "Registration Failed", Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             Log.e(TAG,"Failed Error : ",e);
         }
-    }
-    void checkRegistration(Context con){
-        final Context cont = con;
-        req = new StringRequest(Request.Method.POST, Constants.REGISTER_URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.trim().equalsIgnoreCase("Success"))
-                    Toast.makeText(cont, "Registration Successful", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(cont, "Registration Failed", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
     }
 }

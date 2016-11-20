@@ -23,26 +23,26 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "registration";
+    public static final String REGISTERED = "";
     Context mainAct = MainActivity.this;
     Button register,view;
     TextView token;
     EditText email;
-    public static final String REGISTERED = "";
     SharedPreferences share;
-    String reg_text;
     SharedPreferences.Editor editor;
     Register r = new Register();
-    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+    String refreshedToken,reg_text;
     Thread reg = new Thread(new Runnable() {
         @Override
         public void run() {
-            r.sendRegistrationToServer(refreshedToken, email.getText().toString());
+            r.sendRegistrationToServer(refreshedToken, email.getText().toString(),mainAct);
             editor.clear();
             editor.putString(REGISTERED, "Registered").apply();
             Log.d(TAG, reg_text);
             Log.d(TAG, "In reg thread");
+            if(Thread.interrupted())
+                Log.d(TAG,"Interrupted, now returning");
         }
-
     });
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
         register = (Button) findViewById(R.id.button_reg);
         token = (TextView) findViewById(R.id.textView);
         email = (EditText) findViewById(R.id.editText3);
@@ -61,41 +62,36 @@ public class MainActivity extends AppCompatActivity {
         editor = share.edit();
         editor.putString(REGISTERED,"Unregistered");
         editor.apply();
-        token.setText(refreshedToken);
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                reg_text = share.getString(REGISTERED, "defaultStringIfNothingFound");
-                token.setText(reg_text);
-                Log.d(TAG, reg_text);
-                if (email.getText() != null && isRegistered()) {
-                    Log.d(TAG, "in gettext if");
-                    if (!reg.isAlive())
-                        reg.start();
-                    else if(reg.isAlive())
-                        reg.interrupt();
-                } else if (!isRegistered()) {
-                    Toast.makeText(getApplicationContext(), "Already Registered", Toast.LENGTH_SHORT).show();
-                }
-                Log.d(TAG, "In Onclick");
-                r.checkRegistration(mainAct);
-
-
-            }
-        });
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, Display.class);
-                startActivity(i);
-                finish();
-            }
-        });
+        register.setOnClickListener(tokenListener);
+        view.setOnClickListener(displayFinder);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+    View.OnClickListener tokenListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            token.setText(refreshedToken);
+            reg_text = share.getString(REGISTERED, "defaultStringIfNothingFound");
+            Log.d(TAG, reg_text);
+            if (email.getText() != null && isRegistered()) {
+                Log.d(TAG, "in gettext if");
+                reg.start();
+            } else if (!isRegistered()) {
+                Toast.makeText(getApplicationContext(), "Already Registered", Toast.LENGTH_SHORT).show();
+                if(reg.isAlive()) reg.interrupt();
+            }
+            Log.d(TAG, "In Onclick");
+        }
+    };
+    View.OnClickListener displayFinder = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(MainActivity.this, Display.class);
+            startActivity(i);
+            finish();
+        }
+    };
 
     public boolean isRegistered() {
         Log.d(TAG, "In isreg");
