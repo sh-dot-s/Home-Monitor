@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "registration";
     public static final String REGISTERED = "";
     Context mainAct = MainActivity.this;
-    Button register,view;
+    Button register,view, insert;
     TextView token;
     EditText email;
     SharedPreferences share;
@@ -58,12 +58,14 @@ public class MainActivity extends AppCompatActivity {
         token = (TextView) findViewById(R.id.textView);
         email = (EditText) findViewById(R.id.editText3);
         view = (Button)findViewById(R.id.button3);
+        insert = (Button) findViewById(R.id.button5);
         share = mainAct.getSharedPreferences(REGISTERED, 0);
         editor = share.edit();
         editor.putString(REGISTERED,"Unregistered");
         editor.apply();
         register.setOnClickListener(tokenListener);
         view.setOnClickListener(displayFinder);
+        insert.setOnClickListener(queryInserter);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -82,6 +84,14 @@ public class MainActivity extends AppCompatActivity {
                 if(reg.isAlive()) reg.interrupt();
             }
             Log.d(TAG, "In Onclick");
+        }
+    };
+    View.OnClickListener queryInserter = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent in = new Intent(MainActivity.this, Insert.class);
+            startActivity(in);
+            finish();
         }
     };
     View.OnClickListener displayFinder = new View.OnClickListener() {

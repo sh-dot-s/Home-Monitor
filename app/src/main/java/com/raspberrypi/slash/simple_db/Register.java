@@ -26,7 +26,7 @@ public class Register {
     public void sendRegistrationToServer(String refreshedToken, String email,Context cont){
         final Context c = cont;
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://192.168.0.110/Tutorial/Register.php");
+        HttpPost httppost = new HttpPost("http://192.168.1.16/Tutorial/Register.php");
 
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);

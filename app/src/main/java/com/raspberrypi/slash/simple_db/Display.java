@@ -20,7 +20,7 @@ public class Display extends AppCompatActivity{
         read.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reader.loadUrl("http://192.168.0.110/temp-readings.php");
+                reader.loadUrl("http://192.168.1.16/temp-readings.php");
             }
         });
     }
