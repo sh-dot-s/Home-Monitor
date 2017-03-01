@@ -1,6 +1,5 @@
 package com.raspberrypi.slash.simple_db;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.android.volley.toolbox.StringRequest;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
