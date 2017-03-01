@@ -4,47 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="193dp"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName|number"
-        android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:singleLine="false"
-        android:selectAllOnFocus="false"
-        style="@android:style/Widget.DeviceDefault.EditText"
-        android:hint="Id" />
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/button4" />
 
     <Button
-        android:text="Insert"
+        android:text="Get"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button4"
-        android:layout_marginTop="81dp"
-        android:layout_below="@+id/editText"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:elevation="4dp" />
+        android:elevation="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editText"
-        android:layout_weight="1"
-        style="@android:style/Widget.DeviceDefault.EditText"
-        android:layout_below="@+id/editText2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="41dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:hint="Relay Value" />
 
 </RelativeLayout>

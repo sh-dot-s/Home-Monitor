@@ -1,98 +1,88 @@
 package com.raspberrypi.slash.simple_db;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Random;
-import android.content.Context;
+
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+public class Insert extends AppCompatActivity implements View.OnClickListener {
+    
+    private Button buttonGet;
+    private TextView textViewResult;
 
-public class Insert extends AppCompatActivity{
+    private ProgressDialog loading;
 
-    EditText id, relay;
-    Button insert;
-    String idEdit,relayEdit;
-    String POST_URL = "http://192.168.1.16/relay-send.php";
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
-        id = (EditText) findViewById(R.id.editText2);
-        relay = (EditText) findViewById(R.id.editText);
-        insert = (Button) findViewById(R.id.button4);
-        insert.setOnClickListener(inserter);
+        
+        buttonGet = (Button) findViewById(R.id.button4);
+        textViewResult = (TextView) findViewById(R.id.textView2);
+
+        buttonGet.setOnClickListener(this);
     }
-    View.OnClickListener inserter = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            try{
-                insertIntoServer();
-            }catch (Exception e){
 
+    private void getData() {
+
+        loading = ProgressDialog.show(this,"Please wait...","Fetching...",false,false);
+
+        String url = Constants.DATA_URL;
+
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                loading.dismiss();
+                showJSON(response);
             }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(Insert.this,error.getMessage().toString(),Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void showJSON(String response){
+        String pir="", soil="",raindrop="",temperature="",humidity="";
+        String flame="";
+        String reed = "";
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray result = jsonObject.getJSONArray(Constants.JSON_ARRAY);
+            JSONObject collegeData = result.getJSONObject(0);
+            pir = collegeData.getString(Constants.KEY_PIR);
+            flame = collegeData.getString(Constants.KEY_FLAME);
+            soil = collegeData.getString(Constants.KEY_SOIL);
+            raindrop = collegeData.getString(Constants.KEY_RAINDROP);
+            temperature = collegeData.getString(Constants.KEY_TEMPERATURE);
+            humidity = collegeData.getString(Constants.KEY_HUMIDITY);
+            reed = collegeData.getString(Constants.KEY_REED);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    };
-    public static final String TAG = "registrationPOST";
-    public StringRequest req;
-    public void insertIntoServer() throws IOException{
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://192.168.1.16/relay-send.php");
-        idEdit = id.getText().toString();
-        relayEdit = relay.getText().toString();
-        String POST_PARAMS = "id="+idEdit+"&relayValue="+relayEdit;
+        textViewResult.setText("Motion:\t"+pir+"\nFire:\t" +flame+ "\nsoil:\t"+ soil+ "\nraindrop:\t"+ raindrop+ "\ntemperature:\t"+ temperature+ "\nHumidity:\t"+ humidity+ "\nReed:\t"+ reed);
+    }
 
-        URL obj = new URL(POST_URL);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-
-        // For POST only - START
-        con.setDoOutput(true);
-        OutputStream os = con.getOutputStream();
-        os.write(POST_PARAMS.getBytes());
-        os.flush();
-        os.close();
-        // For POST only - END
-
-        int responseCode = con.getResponseCode();
-        Log.d("POST Response Code :: " , "responseCode: "+responseCode);
-
-        if (responseCode == HttpURLConnection.HTTP_OK) { //success
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            // print result
-            System.out.println(response.toString());
-        } else {
-            System.out.println("POST request not worked");
-        }
+    @Override
+    public void onClick(View v) {
+        getData();
     }
 }
