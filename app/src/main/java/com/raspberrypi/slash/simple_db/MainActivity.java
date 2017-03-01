@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "registration";
     public static final String REGISTERED = "";
     Context mainAct = MainActivity.this;
-    Button register,view, insert;
+    Button register,view, insert, relay;
     TextView token;
     EditText email;
     SharedPreferences share;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.editText3);
         view = (Button)findViewById(R.id.button3);
         insert = (Button) findViewById(R.id.button5);
+        relay = (Button) findViewById(R.id.button6);
         share = mainAct.getSharedPreferences(REGISTERED, 0);
         editor = share.edit();
         editor.putString(REGISTERED,"Unregistered");
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         register.setOnClickListener(tokenListener);
         view.setOnClickListener(displayFinder);
         insert.setOnClickListener(queryInserter);
+        relay.setOnClickListener(relayFinder);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -98,6 +100,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Intent i = new Intent(MainActivity.this, Display.class);
+            startActivity(i);
+            finish();
+        }
+    };
+    View.OnClickListener relayFinder = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(MainActivity.this, Relay.class);
             startActivity(i);
             finish();
         }
